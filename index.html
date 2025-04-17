@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Electron Rust WASM Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Electron Rust WASM Example</h1>
+
+    <div>
+        <h2>Add Numbers Example</h2>
+        <input type="number" id="num1" value="5">
+        <input type="number" id="num2" value="3">
+        <button onclick="runAddNumbers()">Add Numbers</button>
+        <div id="addResult" class="result"></div>
+    </div>
+
+    <div>
+        <h2>Greet Example</h2>
+        <input type="text" id="name" value="World">
+        <button onclick="runGreet()">Greet</button>
+        <div id="greetResult" class="result"></div>
+    </div>
+
+    <script type="module">
+        import init, { add_numbers, greet } from './pkg/electron_rust_wasm.js';
+
+        // Initialize WASM
+        async function run() {
+            await init();
+
+            // Make functions available globally
+            window.add_numbers = add_numbers;
+            window.greet = greet;
+        }
+
+        run();
+    </script>
+
+    <script>
+        async function runAddNumbers() {
+            const num1 = parseInt(document.getElementById('num1').value);
+            const num2 = parseInt(document.getElementById('num2').value);
+            const result = await window.add_numbers(num1, num2);
+            document.getElementById('addResult').textContent = `Result: ${result}`;
+        }
+
+        async function runGreet() {
+            const name = document.getElementById('name').value;
+            const result = await window.greet(name);
+            document.getElementById('greetResult').textContent = result;
+        }
+    </script>
+</body>
+</html>

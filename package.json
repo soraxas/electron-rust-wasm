@@ -1,0 +1,20 @@
+{
+  "name": "electron-rust-wasm",
+  "version": "1.0.0",
+  "description": "Electron app with Rust WASM integration",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc && wasm-pack build --target web",
+    "start": "electron .",
+    "dev": "concurrently \"npm run build -- --watch\" \"electron .\""
+  },
+  "dependencies": {
+    "electron": "^28.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "concurrently": "^8.0.0",
+    "typescript": "^5.0.0",
+    "wasm-pack": "^0.12.0"
+  }
+}
