@@ -14,6 +14,17 @@
             border-radius: 4px;
             white-space: pre-wrap;
         }
+        .program-launcher {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 5px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -34,10 +45,17 @@
         <div id="greetResult" class="result"></div>
     </div>
 
-    <div>
+    <div class="program-launcher">
         <h2>Launch Rust Program</h2>
         <button onclick="runRustProgram()">Launch Program</button>
         <div id="programResult" class="result"></div>
+    </div>
+
+    <div class="program-launcher">
+        <h2>Launch External Program</h2>
+        <input type="text" id="programPath" value="/usr/bin/gedit" placeholder="Enter program path">
+        <button onclick="runExternalProgram()">Launch Program</button>
+        <div id="externalProgramResult" class="result"></div>
     </div>
 
     <script type="module">
@@ -73,10 +91,20 @@
 
         async function runRustProgram() {
             try {
-                const result = await ipcRenderer.invoke('launch-rust-program');
+                const result = await ipcRenderer.invoke('launch-program', './rust-program');
                 document.getElementById('programResult').textContent = result;
             } catch (error) {
                 document.getElementById('programResult').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function runExternalProgram() {
+            const programPath = document.getElementById('programPath').value;
+            try {
+                const result = await ipcRenderer.invoke('launch-program', programPath);
+                document.getElementById('externalProgramResult').textContent = result;
+            } catch (error) {
+                document.getElementById('externalProgramResult').textContent = `Error: ${error.message}`;
             }
         }
     </script>

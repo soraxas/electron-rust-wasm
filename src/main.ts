@@ -18,21 +18,21 @@ function createWindow() {
   mainWindow.webContents.openDevTools();
 }
 
-// Handle launching the Rust program
-ipcMain.handle('launch-rust-program', async () => {
+// Handle launching any program
+ipcMain.handle('launch-program', async (_, programPath: string) => {
   return new Promise((resolve, reject) => {
-    const rustProgram = spawn('./target/release/rust-program');
+    const program = spawn(programPath);
     let output = '';
 
-    rustProgram.stdout.on('data', (data) => {
+    program.stdout.on('data', (data) => {
       output += data.toString();
     });
 
-    rustProgram.stderr.on('data', (data) => {
+    program.stderr.on('data', (data) => {
       output += data.toString();
     });
 
-    rustProgram.on('close', (code) => {
+    program.on('close', (code) => {
       if (code === 0) {
         resolve(output);
       } else {
@@ -40,7 +40,7 @@ ipcMain.handle('launch-rust-program', async () => {
       }
     });
 
-    rustProgram.on('error', (err) => {
+    program.on('error', (err) => {
       reject(err);
     });
   });
