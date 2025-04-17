@@ -9,15 +9,22 @@ install:
     # Install Node.js dependencies
     npm install
 
+# Build TypeScript
+build-ts:
+    npm run build
 
 # Build WASM
 build-wasm:
     wasm-pack build --target web
 
+# Build Rust binary
+build-rust:
+    cargo build --release
+    # Copy the binary to the project root
+    cp target/release/rust-program .
+
 # Build everything
-build:
-    npm run build
-    just build-wasm
+build: build-ts build-wasm build-rust
 
 # Start the application (requires build)
 start:
@@ -38,3 +45,7 @@ clean:
     rm -rf pkg/
     # Remove node_modules
     rm -rf node_modules/
+    # Remove Rust build artifacts
+    cargo clean
+    # Remove copied binary
+    rm -f rust-program

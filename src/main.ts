@@ -1,5 +1,6 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
+import { spawn } from 'child_process';
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -16,6 +17,34 @@ function createWindow() {
   // Open DevTools by default
   mainWindow.webContents.openDevTools();
 }
+
+// Handle launching the Rust program
+ipcMain.handle('launch-rust-program', async () => {
+  return new Promise((resolve, reject) => {
+    const rustProgram = spawn('./target/release/rust-program');
+    let output = '';
+
+    rustProgram.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    rustProgram.stderr.on('data', (data) => {
+      output += data.toString();
+    });
+
+    rustProgram.on('close', (code) => {
+      if (code === 0) {
+        resolve(output);
+      } else {
+        reject(new Error(`Program exited with code ${code}`));
+      }
+    });
+
+    rustProgram.on('error', (err) => {
+      reject(err);
+    });
+  });
+});
 
 app.whenReady().then(() => {
   createWindow();
